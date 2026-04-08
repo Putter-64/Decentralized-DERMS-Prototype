@@ -1,0 +1,220 @@
+Vendor	Product Name	Key Features (Summary at top)
+Schneider Electric	EcoStruxure DERMS	- Native Modbus/OPC UA support
+- Grid-edge optimization
+- Utility-scale deployments
+Pasted from site: EcoStruxure™ DERMS | Schneider Electric USA
+DER management
+Manage Distributed Energy Resources with an overarching interface that directly communicates to single DER units, enables their aggregation, and interfaces 3rd-party-aggregated DERs. Supports all types of generation, energy storage, electric vehicles, microgrids, and demand programs. Keeps track of DER in real time and forecasted output.
+DER flexibility
+Gain insight into the available DER flexibility, from DER units to the DER group level. Dispatch grouped DER as one virtual resource. Optimized dispatch for both local and large-scale services.
+Situational awareness 
+Gain awareness of DER’s impact on the grid. Get hidden load information with a single click on network view. Detect DER-imposed issues such as reverse power flow, grid edge problems, or generally weak points in the network. Receive an alert for any such issue happening in real time. Discover upcoming constraint violations using Look Ahead functionality for improved near-term operations planning.
+
+
+Active network management
+Apply Active Network Management that overcomes under/overvoltage, thermal overflow, and undesired reverse power flows while maximizing renewable generation output. Combine traditional optimization assets with available DER flexibility for maximized renewable generation and minimized customer disruption. Capture the full potential of DER flexibility by implementing upfront DER dispatch using Look Ahead Constraint Management.
+Demand flexibility
+Utilize aggregated DER flexibility in a violation-free manner, including real and reactive power flexibility. The optimum dispatch of DER flexibility, from the whole system to a feeder level, implements generation curtailment, load shed, and shift, capacity and energy management, and VAR support.
+Hosting capacity
+Increase efficiency of processing new customer connections. Assess available hosting capacity in each part of the network with a hosting capacity heat map. Seamlessly execute detailed customer connection check to determine how newly installed DER affects the existing and future grid, considering voltage violations, overloads, reverse flow, and more. Analyze locations that are already facing constraints violations.
+Non-wire alternatives
+For areas faced with constraints violations and in need of an upgrade, use the Network Planning suite that leverages intelligent forecasting tools and network simulation modules. As a planning engineer, develop future network models proficiently, plan for multiple DER integration scenarios and compare traditional and alternative grid planning options. Ensure the grid is effectively reinforced while flexibility is maximized.
+
+
+Siemens	Spectrum Power DERMS	- SCADA/ADMS integration
+- Cybersecurity-focused
+- Transmission-level control
+
+Link to brochure:
+Siemens · Brochure template · A4 portrait
+
+
+Future-proof
+•	Adaptability and scalability for future changes
+•	Flexibility based on standards and open interfaces
+•	Easy integration of renewable generation
+
+Reliable
+•	Reliable and stable power supply
+•	Maximizing grid utilization
+•	Keeping up with regulatory requirements
+
+Multi-commodity
+•	Advanced and dedicated applications 
+•	Comprehensive management of power/pipe networks
+•	Cross-commodity optimization
+
+Cyber-secure
+•	Advanced multilayer, built-in security features
+•	Frequent security patches
+•	Adherence to international and regional security standards
+
+AutoGrid (Flex)	AutoGrid Flex	- AI-driven market optimization
+- API-first (REST/MQTT)
+- CAISO/PJM market integration
+
+•	Energy Storage Co-Optimization: Enhances the value of energy storage systems at local sites, allowing for better management of energy storage assets alongside demand response and other DERs. 
+
+
+•	Demand Response Management: Facilitates the implementation of demand response programs, helping to balance supply and demand and reduce peak load pressures. 
+
+
+•	AI and Machine Learning: Utilizes algorithms to forecast energy demand and generation patterns, enabling proactive decision-making and improving operational efficiency. 
+
+
+•	Virtual Power Plants (VPP): Aggregates multiple DERs to form VPPs, providing a cost-effective alternative to traditional power plants and supporting the transition to a decentralized energy system. 
+
+These features collectively enhance grid reliability, improve operational efficiency, and support the transition to a cleaner, more efficient energy system.
+
+They cover C&I and residential use cases across a broad range of DERs: EVs, solar, battery storage and more. They also have a complete demand VPP and DR offering to combine with the DERMS software they provide.
+
+Oracle	Oracle DERMS	- Scalable for large DER fleets
+- Outage management integration
+- Regulatory compliance tools
+
+Link: Utilities Distributed Energy Resources Management | Oracle
+
+Cloud Service Features:
+Key capabilities: 
+• Device Asset 
+Management 
+• Program 
+Management 
+• Event Management 
+• Settlements 
+• Analytics and 
+Business Insights 
+Key benefits: 
+• Accurately capture 
+device attributes and 
+event participation 
+• Improve 
+responsiveness of all 
+connected 
+generating assets 
+and controllable 
+loads 
+• Improve customer 
+service by delivering 
+real-time portal 
+updates 
+• Seamless integration 
+with utility DERMS, 
+CIS, Mobile 
+Workforce, and other 
+utility data platforms 
+• Proven scalability 
+from a leader in grid 
+management
+
+Grid Derms features:
+Key capabilities: 
+• Seamless integration 
+with Oracle Utilities 
+DMS  (Distribution Management System)
+• Model various DER 
+technologies for 
+power flow analysis 
+• Group DERs by type, 
+user-defined 
+categories, and 
+network hierarchy 
+• Forecast DERs’ 
+output for real-time 
+and study mode 
+• Optimize DER cost 
+within operational 
+constraints 
+• Enhance Grid 
+Reliability—reduce 
+voltage and loading 
+violations events and 
+enhances stability
+mPrest (Shell)	mPrest DERMS	- Military-grade cybersecurity
+- Microgrid resilience
+- Modbus-to-API bridges
+Link: DISTRIBUTED ENERGY RESOURCE MANAGEMENT – mprest
+THE MPREST ADVANTAGES
+•	System of Systems: System of Systems End-to-end orchestration, situational awareness and optimization of front-of-meter and behind-the-meter grid edge assets.
+•	DERMS analytics and plans integrated with asset health and fleet status.
+•	Dynamic system topology awareness
+•	DaaS, DERMS as a Service
+•	Production Proven
+Generac Grid Services + Enbala	Concerto DERMS	- VPP-focused
+- Home battery/EVC coordination
+- Auto-bidder for markets
+
+Concerto DERMS: Concerto Optimize: Securely manage and optimize the integration of behind- and front-of-meter distributed energy resources (DERs) in the electricity grid | AWS for Industries
+From advanced demand response to energy market dynamic dispatch and highly complex distribution optimization, Concerto is a single platform for distributed energy orchestration and control. Concerto uses machine learning to forecast available capacity in near real time, and its distributed bidding system optimizes the network and solves grid problems while accounting for the costs and constraints of virtually every asset in the system.
+Example of how it looks:
+ 
+Enbala:
+- Real-time frequency response
+- Sub-second control
+- Edge computing support
+They bought Enbala in 2020:
+Enbala’s software specializes in sub-second DER orchestration (batteries, solar, EVs).
+EnergyHub	Grid-Edge DERMS	
+Link: The premier platform for all your Customer-owned DERs | EnergyHub Platform Overview
+
+EnergyHub’s grid-edge DERMS is built to be highly customer-centric and manage multiple DER classes at scale. The system is said to be a critical element of fully integrated, holistic utility planning and operations. EnergyHub has a specialization in EVs (Electric Vehicles), making them the ideal choice for this use case.
+
+Customer-centric DER programs
+Quickly scale VPPs with the support of program management services.
+
+Grid-aware VPP management
+Effectively address grid needs using strategies informed by forecasting and grid data.
+
+Near real-time visibility of VPP impact
+Monitor program performance as events are happening. Rather than waiting for reports to act, make adjustments on the fly.
+
+
+
+Virtual Peaker
+	Shift Grid-Edge DERMS suite	Virtual Peaker’s DERMS suite manages residential electric demand. It applies machine learning and real-time control to internet-enabled appliances to reduce demand while minimizing the negative impact on the residential customer. The platform connects in-home smart devices to run residential demand response programs that leverage distributed energy resources (DERs) to reduce cost and peak load.
+
+Link: Virtual Peaker's Shift | Smart Grid-Edge DERMS Solutions
+
+Utility Portal
+The Virtual Peaker utility portal enables you to manage the complete lifecycle of all DERs.
+With Virtual Peaker’s Shift Grid-Edge DERMS utility portal, you can:
+•	Own and manage the entire lifecycle of your DER programs all in one platform.
+•	Communicate with customers about demand response events and device statuses with easy-to-use email and/or SMS.
+•	Deploy demand response programs with the click of a button.
+•	Add new control strategies, device types, and manufacturers when you’re ready, and as your demand response (DR) programs grow. 
+•	Use a secure, intuitive portal that allows for user-based permissions to be configured by role and need.
+
+Real-Time Data Reporting
+Control costs and the impact of transmission peaks with real-time data and reporting.
+Our Shift Grid-Edge DERMS Suite reporting enables you to:
+•	Take control of your DER strategy with real-time data at the individual device level.
+•	Measure and verify DER events with customizable data visualizations – by device type, event timelines, and more.
+•	Gain insights from normalized and translated data originating from multiple manufacturers and technologies – from thermostats, batteries, EV chargers, and EV telematics.
+•	Utilize built-in device-level analytics to determine energy consumption for DR events both pre-event and post-event. 
+•	Create reports for event performance, device data, customer enrollments, and more!
+•	Track demand response dispatched events at participating homes.
+•	Customizable and reliable baselining and reporting are built into the reporting interface.
+
+Easy Enrollment
+An integrated enrollment management framework built directly into the utility interface allows you to easily drive and manage demand response program enrollment.
+With Virtual Peaker’s Shift Grid-Edge DERMS platform suite enrollment features, you:
+•	Can permit individual device enrollment directly with the customer or on their behalf.
+•	Allow customers to easily enroll multiple devices without having to submit multiple applications
+•	Easily support unique customer enrollment journeys and program designs.
+•	Can apply machine learning and real-time control to minimize the cost and impact of TOU rates on customers.
+•	Can easily add on the Customer Engagement suite at any time to further drive engagement with your program using a branded microsite and easy-to-use enrollment form.
+
+Enode	Aggregate	Link: Aggregate | Enode
+
+Get reports of your contribution
+Different flexibility markets have different reporting requirements. We make sure you can prove your contribution to the markets you participate in.
+•	Audited contributions
+•	Reliability and accountability
+•	Transparency
+
+•	Real-Time Load Monitoring: Tracks flexible load availability across geographies and device types.
+•	Programmatic Load Activation: Enables automated control of aggregated loads based on market signals.
+•	Market-Agnostic Design: Compatible with major flexibility markets and regulatory frameworks.
+•	Transparent Reporting: Provides audited delivery reports to meet market compliance standards.
+
+Link to their API docs: https://developers.enode.com/api/reference#response-times
