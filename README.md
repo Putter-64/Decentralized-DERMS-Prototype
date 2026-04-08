@@ -1,6 +1,6 @@
-# Solid Pod Listener
+# Decentralized DERMS Prototype
 
-Pod listener that can send numbers to a specified resource 
+Pod listener and Dashboard GUI that can read and display data contained in Solid Pods
 
 “Login to Solid” sends you to the Solid server at the VITE_BASE_URI in  `.env` file to authenticate (enter credentials / pick account) via logging into the Solid OIDC (OpenID Connect) identity provider (issuer), then redirects back with tokens so the app can read/write pod resources on that server.
 
