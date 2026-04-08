@@ -9,7 +9,9 @@ Edit the `.env` file to set resource to watch/overwrite by providing the Solid C
 You might have to click the advanced settings to have your browser accept the CSS before you can login for now
 
 Login to the webportal as a utility using the credentials of:
-email: util@example.com
+
+Email: util@example.com
+
 PW: password123
 
 ## Notes:
