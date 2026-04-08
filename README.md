@@ -8,6 +8,10 @@ Edit the `.env` file to set resource to watch/overwrite by providing the Solid C
 
 You might have to click the advanced settings to have your browser accept the CSS before you can login for now
 
+Login to the webportal as a utility using the credentials of:
+util@example.com
+password123
+
 ## Notes:
 If you get: error when starting dev server: Error: EPERM: operation not permitted
 Remove-Item -Recurse -Force "C:\Users\putte\GitHub\Solid-Pod-Writer\node_modules\.vite"
