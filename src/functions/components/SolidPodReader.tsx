@@ -8,8 +8,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 
-import { DataPoint, isDnp3Data } from '../dataTypes';
-import { MAX_DNP3_POINTS_PER_SERIES } from '../config/dnp3GraphPolicy';
+import { DataPoint, DNP3Data, isDnp3Data } from '../dataTypes';
+import {
+  MAX_DNP3_POINTS_PER_SERIES,
+  shouldOmitDnp3FieldFromTimeChart,
+} from '../config/dnp3GraphPolicy';
 import { trimDnp3ResultsBySeries } from '../parsers/dnp3Parser';
 import { WebSocketService } from '../services/websocketService';
 import { DataService } from '../services/dataService';
@@ -19,6 +22,7 @@ import UpdatesLog from './UpdatesLog';
 import LoginSection from './LoginSection';
 import DebugReader from '../parsers/DebugReader';
 import DeviceChart from './DeviceChart';
+import Dnp3TyphoonSimulationControls from './Dnp3TyphoonSimulationControls';
 import { getExpectedWebIdForPod, listDerPodNames, webIdsEqual } from '../../config/derWebIds';
 import {
   getPortalSession,
@@ -323,6 +327,24 @@ const SolidPodReader: React.FC = () => {
     )
   );
 
+  const dnp3StateByFamily = React.useMemo(() => {
+    const out: Record<string, number | null> = {};
+    for (const f of dnp3Families) out[f] = null;
+    const statePoints = filteredData.filter(
+      (d): d is DNP3Data =>
+        isDnp3Data(d) &&
+        Boolean(d.fileDeviceId) &&
+        d.field.trim().toLowerCase() === 'state'
+    );
+    for (const f of dnp3Families) {
+      const pts = statePoints.filter((d) => d.fileDeviceId === f);
+      if (pts.length === 0) continue;
+      const latest = pts.reduce((a, b) => (a.timestamp >= b.timestamp ? a : b));
+      out[f] = latest.value;
+    }
+    return out;
+  }, [filteredData, dnp3Families]);
+
   // Ensure that "All" is not the default tab when DNP3 families are available.
   // When data arrives and no specific family has been chosen yet, default to
   // the first available family instead of "All".
@@ -344,12 +366,17 @@ const SolidPodReader: React.FC = () => {
 
   // Prepare chart data based on grouping method
   const getChartData = () => {
-    const dnp3 = familyFilteredData.filter((d) => d.dataType === 'dnp3');
-    const nonDnp3 = familyFilteredData.filter((d) => d.dataType !== 'dnp3');
+    const chartFamilyFiltered = familyFilteredData.filter(
+      (item) =>
+        item.dataType !== 'dnp3' ||
+        (isDnp3Data(item) && !shouldOmitDnp3FieldFromTimeChart(item.field))
+    );
+    const dnp3 = chartFamilyFiltered.filter((d) => d.dataType === 'dnp3');
+    const nonDnp3 = chartFamilyFiltered.filter((d) => d.dataType !== 'dnp3');
     const byDnp3Device = prepareChartDataByDevice(dnp3);
 
     if (groupingMethod === 'device') {
-      return prepareChartDataByDevice(familyFilteredData);
+      return prepareChartDataByDevice(chartFamilyFiltered);
     } else if (groupingMethod === 'source') {
       // Keep DNP3 visible as point-level charts even in "By Source" mode.
       // Source grouping collapses many heterogeneous DNP3 points into one chart,
@@ -896,6 +923,18 @@ const SolidPodReader: React.FC = () => {
                 ))}
               </div>
             </div>
+
+            {dnp3Families.length > 0 && primaryPod && (
+              <div style={{ marginBottom: '1rem', width: '100%' }}>
+                <Dnp3TyphoonSimulationControls
+                  podName={primaryPod}
+                  families={dnp3Families}
+                  stateByFamily={dnp3StateByFamily}
+                  onUpdate={addUpdate}
+                  solidFetch={portalSession.fetch}
+                />
+              </div>
+            )}
             
             <div style={{
               display: 'grid',

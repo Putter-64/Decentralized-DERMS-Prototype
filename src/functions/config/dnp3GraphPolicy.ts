@@ -14,3 +14,14 @@ export const MAX_DNP3_SAMPLES_PER_SUBJECT = 40;
 
 /** Field names that are non-numeric enums/flags and should not be parsed (add as needed). */
 export const DNP3_FIELDS_EXCLUDED_FROM_GRAPH: ReadonlySet<string> = new Set(['VolWatt_Enable']);
+
+/**
+ * DNP3 fields still parsed and available for UI (e.g. Typhoon panel) but omitted from time-series charts.
+ * Match is case-insensitive on the field label.
+ */
+const DNP3_FIELDS_OMITTED_FROM_TIME_CHART_LC = new Set(['state']);
+
+export function shouldOmitDnp3FieldFromTimeChart(field: string | undefined): boolean {
+  if (!field) return false;
+  return DNP3_FIELDS_OMITTED_FROM_TIME_CHART_LC.has(field.trim().toLowerCase());
+}
