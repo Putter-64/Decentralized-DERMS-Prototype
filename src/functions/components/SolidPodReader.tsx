@@ -30,9 +30,22 @@ import {
   hasOAuthRedirectParams,
 } from '../../session/portalSessions';
 
+type LatencyStageKey = 'podRead' | 'chartBuild' | 'readAndChart';
+
+interface LatencySample {
+  timestampMs: number;
+  podCount: number;
+  chartCount: number;
+  durationMs: number;
+}
+
+type LatencyHistory = Record<LatencyStageKey, LatencySample[]>;
+
 const baseURI = import.meta.env.VITE_BASE_URI;
 const expectedPortalWebId =
   import.meta.env.VITE_PORTAL_WEBID || `${String(baseURI).replace(/\/+$/, '')}/utility/profile/card#me`;
+
+const MAX_LATENCY_SAMPLES = 200;
 
 const SolidPodReader: React.FC = () => {
   const portalSession = getPortalSession();
@@ -57,6 +70,12 @@ const SolidPodReader: React.FC = () => {
   const [compactView, setCompactView] = useState<boolean>(false);
   const [selectedFamily, setSelectedFamily] = useState<string>('all');
   const userChoseAllRef = useRef<boolean>(false);
+  const [latencyHistory, setLatencyHistory] = useState<LatencyHistory>({
+    podRead: [],
+    chartBuild: [],
+    readAndChart: [],
+  });
+  const lastPodReadDurationMsRef = useRef<number>(0);
 
   // Initialize services
   useEffect(() => {
@@ -148,12 +167,28 @@ const SolidPodReader: React.FC = () => {
     ].join('|');
   };
 
+  const recordLatency = (stage: LatencyStageKey, durationMs: number, podCount: number, chartCount: number): void => {
+    setLatencyHistory((prev) => ({
+      ...prev,
+      [stage]: [
+        ...prev[stage],
+        {
+          timestampMs: Date.now(),
+          podCount,
+          chartCount,
+          durationMs,
+        },
+      ].slice(-MAX_LATENCY_SAMPLES),
+    }));
+  };
+
   const fetchData = async (): Promise<void> => {
     if (accessiblePodNames.length === 0 || !dataServiceRef.current) {
       return;
     }
 
     try {
+      const fetchStart = performance.now();
       const fetchedByPod = await Promise.all(
         accessiblePodNames.map(async (podName) => {
           const points = await dataServiceRef.current!.fetchAllData(
@@ -168,6 +203,9 @@ const SolidPodReader: React.FC = () => {
         })
       );
       const newData = fetchedByPod.flat();
+      const readDurationMs = performance.now() - fetchStart;
+      lastPodReadDurationMsRef.current = readDurationMs;
+      recordLatency('podRead', readDurationMs, accessiblePodNames.length, 0);
       
       if (newData.length > 0) {
         setAllData(prev => {
@@ -209,6 +247,9 @@ const SolidPodReader: React.FC = () => {
         if (dnp3Count > 0) {
           addUpdate(`DNP3 breakdown: ${dnp3Families} families, ${dnp3Fields} fields`);
         }
+        addUpdate(
+          `Latency: pod read ${readDurationMs.toFixed(0)} ms across ${accessiblePodNames.length} selected pod(s)`
+        );
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -327,23 +368,44 @@ const SolidPodReader: React.FC = () => {
     )
   );
 
-  const dnp3StateByFamily = React.useMemo(() => {
-    const out: Record<string, number | null> = {};
-    for (const f of dnp3Families) out[f] = null;
-    const statePoints = filteredData.filter(
-      (d): d is DNP3Data =>
-        isDnp3Data(d) &&
-        Boolean(d.fileDeviceId) &&
-        d.field.trim().toLowerCase() === 'state'
-    );
-    for (const f of dnp3Families) {
-      const pts = statePoints.filter((d) => d.fileDeviceId === f);
-      if (pts.length === 0) continue;
-      const latest = pts.reduce((a, b) => (a.timestamp >= b.timestamp ? a : b));
-      out[f] = latest.value;
-    }
-    return out;
-  }, [filteredData, dnp3Families]);
+  const latestValueByFamilyForField = React.useCallback(
+    (fieldMatcher: (field: string) => boolean): Record<string, number | null> => {
+      const out: Record<string, number | null> = {};
+      for (const f of dnp3Families) out[f] = null;
+      const matchingPoints = filteredData.filter(
+        (d): d is DNP3Data =>
+          isDnp3Data(d) &&
+          Boolean(d.fileDeviceId) &&
+          fieldMatcher(d.field.trim().toLowerCase())
+      );
+      for (const f of dnp3Families) {
+        const pts = matchingPoints.filter((d) => d.fileDeviceId === f);
+        if (pts.length === 0) continue;
+        const latest = pts.reduce((a, b) => (a.timestamp >= b.timestamp ? a : b));
+        out[f] = latest.value;
+      }
+      return out;
+    },
+    [filteredData, dnp3Families]
+  );
+
+  const dnp3StateByFamily = React.useMemo(
+    () => latestValueByFamilyForField((field) => field === 'state'),
+    [latestValueByFamilyForField]
+  );
+
+  const dnp3ConverterModeByFamily = React.useMemo(
+    () => latestValueByFamilyForField((field) => field === 'converter_mode' || field === 'converter mode'),
+    [latestValueByFamilyForField]
+  );
+
+  const dnp3ConverterModeFbByFamily = React.useMemo(
+    () =>
+      latestValueByFamilyForField(
+        (field) => field === 'converter_mode_fb' || field === 'converter mode fb'
+      ),
+    [latestValueByFamilyForField]
+  );
 
   // Ensure that "All" is not the default tab when DNP3 families are available.
   // When data arrives and no specific family has been chosen yet, default to
@@ -365,7 +427,7 @@ const SolidPodReader: React.FC = () => {
   })();
 
   // Prepare chart data based on grouping method
-  const getChartData = () => {
+  const getChartData = (): Record<string, DataPoint[]> => {
     const chartFamilyFiltered = familyFilteredData.filter(
       (item) =>
         item.dataType !== 'dnp3' ||
@@ -392,11 +454,45 @@ const SolidPodReader: React.FC = () => {
     }
   };
 
-  const chartData = getChartData();
+  const chartComputation = React.useMemo(() => {
+    const chartBuildStart = performance.now();
+    const computedChartData = getChartData();
+    const durationMs = performance.now() - chartBuildStart;
+    return { computedChartData, durationMs };
+  }, [familyFilteredData, groupingMethod]);
+  const chartData = chartComputation.computedChartData;
+  const latestChartBuildDurationMs = chartComputation.durationMs;
   const chartGroups = Object.keys(chartData);
   const allDataDnp3Count = allData.filter((d) => d.dataType === 'dnp3').length;
   const filteredDnp3Count = filteredData.filter((d) => d.dataType === 'dnp3').length;
   const familyFilteredDnp3Count = familyFilteredData.filter((d) => d.dataType === 'dnp3').length;
+
+  useEffect(() => {
+    if (filteredData.length === 0) return;
+    recordLatency('chartBuild', latestChartBuildDurationMs, accessiblePodNames.length, chartGroups.length);
+    recordLatency(
+      'readAndChart',
+      lastPodReadDurationMsRef.current + latestChartBuildDurationMs,
+      accessiblePodNames.length,
+      chartGroups.length
+    );
+  }, [latestChartBuildDurationMs, filteredData.length, accessiblePodNames.length, chartGroups.length]);
+
+  const getAvgAndStdDev = (samples: LatencySample[]): { avgMs: number; stdDevMs: number } => {
+    if (samples.length === 0) {
+      return { avgMs: 0, stdDevMs: 0 };
+    }
+    const avgMs = samples.reduce((sum, s) => sum + s.durationMs, 0) / samples.length;
+    const variance =
+      samples.reduce((sum, s) => sum + (s.durationMs - avgMs) * (s.durationMs - avgMs), 0) / samples.length;
+    return { avgMs, stdDevMs: Math.sqrt(variance) };
+  };
+
+  const latencyRows: Array<{ label: string; stage: LatencyStageKey }> = [
+    { label: 'Pod Data Read', stage: 'podRead' },
+    { label: 'Chart Data Build', stage: 'chartBuild' },
+    { label: 'End-to-End Read + Chart', stage: 'readAndChart' },
+  ];
 
   if (isLoading) {
     return <h2>Loading...</h2>;
@@ -409,7 +505,7 @@ const SolidPodReader: React.FC = () => {
   return (
     <div style={{ padding: '1rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h1>Solid Pod Reader</h1>
+        <h1>DDERMS Dashboard</h1>
       </div>
       
       <div>
@@ -843,6 +939,54 @@ const SolidPodReader: React.FC = () => {
               Showing Solid Pod data only
             </div>
           </div>
+          {/* Latency table temporarily disabled.
+          <div
+            style={{
+              marginTop: '1rem',
+              backgroundColor: '#5f6061',
+              border: '1px solid #4a4b4c',
+              borderRadius: '6px',
+              padding: '0.75rem',
+            }}
+          >
+            <div style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+              Latency Table (ms)
+            </div>
+            <div style={{ fontSize: '0.8rem', marginBottom: '0.5rem', color: '#d7d9dc' }}>
+              Based on selected pods ({accessiblePodNames.length}, max visualized around 14) and generated charts ({chartGroups.length}).
+            </div>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+              <thead>
+                <tr>
+                  <th style={{ textAlign: 'left', borderBottom: '1px solid #777', padding: '0.35rem 0.25rem' }}>Operation</th>
+                  <th style={{ textAlign: 'right', borderBottom: '1px solid #777', padding: '0.35rem 0.25rem' }}>Avg. Time (ms)</th>
+                  <th style={{ textAlign: 'right', borderBottom: '1px solid #777', padding: '0.35rem 0.25rem' }}>St. Dev (ms)</th>
+                  <th style={{ textAlign: 'right', borderBottom: '1px solid #777', padding: '0.35rem 0.25rem' }}>Samples</th>
+                </tr>
+              </thead>
+              <tbody>
+                {latencyRows.map((row) => {
+                  const samples = latencyHistory[row.stage];
+                  const stats = getAvgAndStdDev(samples);
+                  return (
+                    <tr key={row.stage}>
+                      <td style={{ padding: '0.3rem 0.25rem', borderBottom: '1px solid #666' }}>{row.label}</td>
+                      <td style={{ textAlign: 'right', padding: '0.3rem 0.25rem', borderBottom: '1px solid #666' }}>
+                        {stats.avgMs.toFixed(0)}
+                      </td>
+                      <td style={{ textAlign: 'right', padding: '0.3rem 0.25rem', borderBottom: '1px solid #666' }}>
+                        {stats.stdDevMs.toFixed(0)}
+                      </td>
+                      <td style={{ textAlign: 'right', padding: '0.3rem 0.25rem', borderBottom: '1px solid #666' }}>
+                        {samples.length}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          */}
         </div>
 
         {/* Render Pipeline Diagnostics */}
@@ -930,6 +1074,8 @@ const SolidPodReader: React.FC = () => {
                   podName={primaryPod}
                   families={dnp3Families}
                   stateByFamily={dnp3StateByFamily}
+                  converterModeByFamily={dnp3ConverterModeByFamily}
+                  converterModeFbByFamily={dnp3ConverterModeFbByFamily}
                   onUpdate={addUpdate}
                   solidFetch={portalSession.fetch}
                 />

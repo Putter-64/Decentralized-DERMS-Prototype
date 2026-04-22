@@ -59,3 +59,7 @@ By default:
 - **Per-chart cap**: each rendered chart draws at most ~600 points, even if more are loaded.
 
 You can tune these limits in `src/functions/config/dnp3GraphPolicy.ts` (for parsing/state) and `src/functions/utils/chartUtils.tsx` (for chart rendering) if you need more or less history.
+
+## Typhoon DNP3 simulation states
+
+The Typhoon DNP3 family controls write plain-text commands (`1` = run, `0` = stop) to `.../dnp3_commands/<family>`. Human-readable labels for numeric DNP3 `State` values are defined in `src/functions/config/dnp3GraphPolicy.ts` as `DNP3_STATE_LABELS` (1: starting, 2: running, 3: disabled, 4: error), and the UI renders state text as `State X: <label>` when mapped.

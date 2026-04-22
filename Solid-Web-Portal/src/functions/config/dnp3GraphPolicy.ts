@@ -19,9 +19,23 @@ export const DNP3_FIELDS_EXCLUDED_FROM_GRAPH: ReadonlySet<string> = new Set(['Vo
  * DNP3 fields still parsed and available for UI (e.g. Typhoon panel) but omitted from time-series charts.
  * Match is case-insensitive on the field label.
  */
-const DNP3_FIELDS_OMITTED_FROM_TIME_CHART_LC = new Set(['state']);
+const DNP3_FIELDS_OMITTED_FROM_TIME_CHART_LC = new Set([
+  'state',
+  'converter_mode',
+  'converter_mode_fb',
+  'converter mode',
+  'converter mode fb',
+]);
 
 export function shouldOmitDnp3FieldFromTimeChart(field: string | undefined): boolean {
   if (!field) return false;
   return DNP3_FIELDS_OMITTED_FROM_TIME_CHART_LC.has(field.trim().toLowerCase());
 }
+
+/** Human-readable labels for Typhoon/DNP3 numeric State values. */
+export const DNP3_STATE_LABELS: Readonly<Record<number, string>> = Object.freeze({
+  1: 'starting',
+  2: 'running',
+  3: 'disabled',
+  4: 'error',
+});

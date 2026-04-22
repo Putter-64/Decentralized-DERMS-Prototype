@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { overwriteFile } from '@inrupt/solid-client';
 import { getDefaultSession } from '@inrupt/solid-client-authn-browser';
+import { DNP3_STATE_LABELS } from '../config/dnp3GraphPolicy';
 
 const baseURI = import.meta.env.VITE_BASE_URI;
 const normalizedBaseUri = String(baseURI || '').replace(/\/+$/, '');
@@ -21,6 +22,10 @@ interface Dnp3TyphoonSimulationControlsProps {
   families: string[];
   /** Latest numeric DNP3 "State" field per family (from pod data); shown instead of graphing State. */
   stateByFamily?: Record<string, number | null>;
+  /** Latest numeric DNP3 "Converter_Mode" field per family. */
+  converterModeByFamily?: Record<string, number | null>;
+  /** Latest numeric DNP3 "converter_mode_fb" field per family. */
+  converterModeFbByFamily?: Record<string, number | null>;
   onUpdate?: (message: string) => void;
   solidFetch?: typeof fetch;
 }
@@ -29,6 +34,8 @@ const Dnp3TyphoonSimulationControls: React.FC<Dnp3TyphoonSimulationControlsProps
   podName,
   families,
   stateByFamily,
+  converterModeByFamily,
+  converterModeFbByFamily,
   onUpdate,
   solidFetch,
 }) => {
@@ -135,10 +142,14 @@ const Dnp3TyphoonSimulationControls: React.FC<Dnp3TyphoonSimulationControlsProps
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
         {families.map((family) => {
           const stateVal = stateByFamily?.[family];
+          const converterModeVal = converterModeByFamily?.[family];
+          const converterModeFbVal = converterModeFbByFamily?.[family];
           const stateLine =
             stateVal != null && !Number.isNaN(stateVal)
-              ? `${family} is currently in State ${stateVal}.`
+              ? `${family} was last in State ${stateVal}${DNP3_STATE_LABELS[stateVal] ? `: ${DNP3_STATE_LABELS[stateVal]}.` : '.'}`
               : `${family}: no State reading in the current filter.`;
+          const hasConverterMode = converterModeVal != null && !Number.isNaN(converterModeVal);
+          const hasConverterModeFb = converterModeFbVal != null && !Number.isNaN(converterModeFbVal);
 
           return (
             <div
@@ -202,7 +213,9 @@ const Dnp3TyphoonSimulationControls: React.FC<Dnp3TyphoonSimulationControlsProps
                   paddingLeft: '0.1rem',
                 }}
               >
-                {stateLine}
+                <div>{stateLine}</div>
+                {hasConverterMode && <div>{`Converter_Mode was last ${converterModeVal}.`}</div>}
+                {hasConverterModeFb && <div>{`converter_mode_fb was last ${converterModeFbVal}.`}</div>}
               </div>
             </div>
           );
