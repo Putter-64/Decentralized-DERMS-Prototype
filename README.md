@@ -68,4 +68,6 @@ You can tune these limits in `src/functions/config/dnp3GraphPolicy.ts` (for pars
 
 ## Typhoon DNP3 simulation states
 
-The Typhoon DNP3 family controls write plain-text commands such as (`1` = run, `0` = stop) to `.../dnp3_commands/<family>`. Human-readable labels for numeric DNP3 `State` values are defined in `src/functions/config/dnp3GraphPolicy.ts` as `DNP3_STATE_LABELS` (1: starting, 2: running, 3: disabled, 4: error), and the UI renders state text as `State X: <label>` when mapped.
+The Typhoon DNP3 family controls write plain-text commands such as (`1` = run, `0` = stop) to `.../dnp3_commands/<family>`. 
+
+Human-readable labels for numeric DNP3 `State` values are defined in `src/functions/config/dnp3GraphPolicy.ts` as `DNP3_STATE_LABELS` such as (1: starting, 2: running, 3: disabled, 4: error), and the UI renders state text as `State X: <label>` when mapped.
