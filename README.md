@@ -20,6 +20,7 @@ Remove-Item -Recurse -Force "C:\Users\putte\GitHub\Solid-Pod-Writer\node_modules
 Then run: npm install
 
 If clicking "Login to Solid" yields the following in the Inspect Console: 
+
 Failed to load resource: net::ERR_CERT_AUTHORITY_INVALID
 IssuerConfigFetcher.ts:174   Uncaught (in promise) TypeError: Failed to fetch
     at _IssuerConfigFetcher.fetchConfig (IssuerConfigFetcher.ts:174:43)
